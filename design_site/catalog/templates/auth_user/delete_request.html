@@ -1,0 +1,10 @@
+{% extends "home.html" %}
+
+{% block content %}
+     <h1>Вы уверены, что хотите удалить заявку "{{ request_to_delete.title }}"?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="Удалить">
+    </form>
+    <a href="{% url 'home' %}">Отмена</a>
+{% endblock %}

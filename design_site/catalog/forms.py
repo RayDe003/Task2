@@ -58,7 +58,7 @@ class RegistrationForm(UserCreationForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Логин', max_length=100, required=True)
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput, required=True)
-    error_message = None  # Инициализируйте поле для сообщения об ошибке
+    error_message = None
 
     def add_error_message(self, message):
         self.error_message = message
@@ -68,4 +68,4 @@ class LoginForm(forms.Form):
 class RequestForm(forms.ModelForm):
     class Meta:
         model = Request
-        fields = ['title', 'description', 'category']
+        fields = ['title', 'description', 'category','request_photo']

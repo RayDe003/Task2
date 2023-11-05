@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
-from django.views import generic
-from django.views.generic import ListView
-from django.utils import timezone
-from .forms import RegistrationForm, LoginForm
-from django.contrib import messages
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView
+from .forms import RegistrationForm, LoginForm, RequestForm
 from django.contrib.auth import login, authenticate, logout
 
 from .models import Request
@@ -12,8 +11,6 @@ from .models import Request
 # Create your views here.
 def index(request):
     return render (request, 'index.html')
-    # requests_list = Request.objects.all()
-    # return render(request, 'index.html', {'requests_list': requests_list})
 
 def home(request):
     return render(request, 'home.html')
@@ -59,23 +56,36 @@ def login_v(request):
 
     return render(request, 'registration/login.html', {'form': form})
 
-# class RequestsView(generic.ListView):
-#     model = Request
-#     paginate_by = 4
-
-
-
-# def requestView(generic.ListView):
-#     requests_list = Request.objects.all()  # Получение всех заявок
-#     return render(request, 'index.html', {'requests_list': requests_list})
-
 def logout_view(request):
-    logout(request)  # Выход пользователя
+    logout(request)
     return redirect('index')
 
 class ViewRequests(ListView):
    model = Request
    template_name = 'index.html'
    context_object_name = 'requests'
-   completed_requests = Request.objects.filter(is_completed=True).order_by('-date_create','-time_create')[:4]
 
+class RequestCreate(LoginRequiredMixin, CreateView):
+    model = Request
+    form_class = RequestForm
+    template_name = 'auth_user/request_form.html'
+    success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+def user_requests(request):
+        user = request.user
+        requests = Request.objects.filter(user=user)
+        return render(request, 'auth_user/my_requests.html', {'requests': requests})
+
+
+def delete_request(request, request_id):
+    user = request.user
+    request_to_delete = get_object_or_404(Request, id=request_id, user=user)
+
+    if request.method == 'POST':
+        request_to_delete.delete()
+        return redirect('home')
+
+    return render(request, 'auth_user/delete_request.html', {'request_to_delete': request_to_delete})

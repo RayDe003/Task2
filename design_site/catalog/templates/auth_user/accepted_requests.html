@@ -1,0 +1,14 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2>Заявки в статусе "Принято"</h2>
+                <ul>
+                     aaaa
+                    {% for request in accepted_requests %}
+                    ,,,,,,
+                        <li>
+                            <a href="{% url 'request_detail' request.id %}">{{ request.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+{% endblock %}

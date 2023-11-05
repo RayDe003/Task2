@@ -1,0 +1,19 @@
+{% extends "home.html" %}
+
+{% block content %}
+    <h1>Заявки пользователя {{ user.username }}</h1>
+    <ul>
+        {% for request in requests %}
+            <li>
+                <h3>{{ request.title }}</h3>
+                <p>{{ request.description }}</p>
+                <p>Статус: {{ request.status }}</p>
+                <p><a href="{% url 'delete_request' request.id %}">Удалить</a></p>
+                <br>
+                <br>
+            </li>
+        {% empty %}
+            <li>Пользователь пока не создал заявок.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
